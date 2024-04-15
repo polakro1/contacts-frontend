@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { Text, Link as ChakraLink } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 
-function ContactListItem({ contact: passedContact }) {
-  const [contact] = useState(passedContact);
-
+function ContactListItem({ contact }) {
   return (
     <ChakraLink
       _hover={{ textDecoration: "none" }}
