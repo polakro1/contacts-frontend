@@ -1,34 +1,38 @@
-import { useEffect, useState } from "react";
-import Contact from "./Contact/Contact";
 import { getContacts } from "../services/ContactService";
-import { Container, VStack } from "@chakra-ui/react";
+import { Text, VStack } from "@chakra-ui/react";
 import ContactListItem from "./Contact/ContactListItem";
+import { redirect, useLoaderData } from "react-router-dom";
 
-function ContactList({
-  contacts: passedContacts,
-  onSelectContact,
-  activeContactId,
-}) {
-  const [contacts, setContacts] = useState(passedContacts);
-
-  function handleSelectContact(contact) {
-    onSelectContact(contact);
-  }
+function ContactList() {
+  const { contacts } = useLoaderData();
 
   return (
-    <Container overflowY="auto">
-      <VStack>
-        {contacts.map((contact) => (
-          <ContactListItem
-            key={contact._id}
-            contact={contact}
-            isActive={activeContactId === contact._id}
-            onClick={(contact) => handleSelectContact(contact)}
-          />
-        ))}
-      </VStack>
-    </Container>
+    <VStack
+      minH={0}
+      width={"100%"}
+      overflowY="auto"
+      h={"100%"}
+      padding={"15px"}
+    >
+      {contacts.length === 0 && <Text>Nothing here...</Text>}
+      {contacts.map((contact) => (
+        <ContactListItem key={contact._id} contact={contact} />
+      ))}
+    </VStack>
   );
 }
 
 export default ContactList;
+
+export async function loader({ request }) {
+  try {
+    const url = new URL(request.url);
+    const search = url.searchParams.get("search");
+    const contacts = await getContacts(search);
+    return { contacts, search };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return redirect("/login");
+    }
+  }
+}

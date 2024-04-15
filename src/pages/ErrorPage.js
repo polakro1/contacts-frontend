@@ -1,4 +1,4 @@
-import { Center, Container, Heading, Text } from "@chakra-ui/react";
+import { Center, Heading, Text, VStack } from "@chakra-ui/react";
 import { useRouteError } from "react-router-dom";
 
 function ErrorPage() {
@@ -7,9 +7,11 @@ function ErrorPage() {
 
   return (
     <Center>
-      <Heading>Chyba!</Heading>
-      <Text>Něco se nepodařilo</Text>
-      <Text>{error.statusText || error.message}</Text>
+      <VStack marginTop={"10vh"}>
+        <Heading>Chyba!</Heading>
+        <Text>Něco se nepodařilo</Text>
+        <Text>{error.statusText || error.message}</Text>
+      </VStack>
     </Center>
   );
 }

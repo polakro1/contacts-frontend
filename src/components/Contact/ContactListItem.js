@@ -1,25 +1,27 @@
 import { useState } from "react";
-import { Button, Container, Flex, Text } from "@chakra-ui/react";
+import { Text, Link as ChakraLink } from "@chakra-ui/react";
+import { NavLink } from "react-router-dom";
 
-function ContactListItem({ contact: passedContact, onClick, isActive }) {
+function ContactListItem({ contact: passedContact }) {
   const [contact] = useState(passedContact);
 
-  function handleOnClick() {
-    onClick(contact);
-  }
-
   return (
-    <Flex
-      w={"100%"}
-      onClick={handleOnClick}
-      bg={isActive ? "blue" : "initial"}
-      borderRadius={"5px"}
-      padding={"5px 5px"}
+    <ChakraLink
+      _hover={{ textDecoration: "none" }}
+      display="flex"
+      w="100%"
+      borderRadius="15px"
+      padding="5px 15px"
+      as={NavLink}
+      to={`contacts/${contact._id}`}
+      style={({ isActive }) =>
+        isActive ? { color: "white", background: "blue" } : null
+      }
     >
-      <Text fontSize={"xl"} color={isActive ? "white" : "initial"}>
+      <Text fontSize={"xl"}>
         {contact.firstName} {contact.lastName}
       </Text>
-    </Flex>
+    </ChakraLink>
   );
 }
 

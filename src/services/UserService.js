@@ -6,6 +6,7 @@ export const checkIsLoggedIn = async () => {
   const response = await axios.get(`${API_BASE_URL}/isLoggedIn`, {
     withCredentials: true,
   });
+  console.log(response.data.isLoggedIn);
   return response.data;
 };
 
@@ -23,5 +24,12 @@ export const logout = async () => {
     {},
     { withCredentials: true },
   );
+  return response;
+};
+
+export const register = async (data) => {
+  const response = await axios.post(`${API_BASE_URL}/register`, data, {
+    withCredentials: true,
+  });
   return response;
 };

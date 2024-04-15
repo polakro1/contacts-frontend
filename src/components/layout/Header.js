@@ -1,23 +1,27 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Form, Link, redirect } from "react-router-dom";
 import { logout } from "../../services/UserService";
-import { useAuth } from "../../context/AuthContext";
 
-function Header() {
-  const { setIsLoggedIn } = useAuth();
-  function handleLogout() {
-    logout().then(() => setIsLoggedIn(false));
-  }
+export default function Header() {
   return (
     <Flex
+      as={"header"}
       w={"100%"}
       justifyContent={"space-between"}
       borderBottom={"solid 1px #e4e4e4"}
       padding={"5px"}
     >
-      <Heading paddingLeft={"5px"}>Contacts</Heading>
-      <Button onClick={handleLogout}>Logout</Button>
+      <Heading as={Link} to={"/"} paddingLeft={"5px"}>
+        Contacts
+      </Heading>
+      <Form method={"post"} action={"/logout"}>
+        <Button type={"submit"}>Logout</Button>
+      </Form>
     </Flex>
   );
 }
 
-export default Header;
+export async function action() {
+  await logout();
+  return redirect("/login");
+}

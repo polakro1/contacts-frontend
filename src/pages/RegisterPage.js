@@ -1,18 +1,16 @@
-import LoginForm from "../components/Forms/LoginForm";
+import RegisterForm from "../components/Forms/RegisterForm";
 import { Heading, VStack } from "@chakra-ui/react";
 
-function LoginPage() {
+export default function RegisterPage() {
   return (
     <VStack marginTop={"10vh"} gap={"7vh"}>
       <Heading size={"4xl"}>Contacts</Heading>
       <VStack>
         <Heading size={"lg"} alignSelf={"flex-start"}>
-          Login
+          Registration
         </Heading>
-        <LoginForm />
+        <RegisterForm />
       </VStack>
     </VStack>
   );
 }
-
-export default LoginPage;

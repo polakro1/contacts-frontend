@@ -1,110 +1,81 @@
-import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { updateContact } from "../../services/ContactService";
+import { deleteContact, getContact } from "../../services/ContactService";
 import {
-  AbsoluteCenter,
   Avatar,
-  Box,
   Button,
-  Divider,
   Flex,
   Heading,
   HStack,
+  IconButton,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { ChatIcon, EmailIcon, PhoneIcon } from "@chakra-ui/icons";
+import {
+  ChatIcon,
+  DeleteIcon,
+  EditIcon,
+  EmailIcon,
+  PhoneIcon,
+} from "@chakra-ui/icons";
+import { Form, Link, redirect, useLoaderData } from "react-router-dom";
 
-function Contact({ contact: passedContact }) {
-  const [contact, setContact] = useState(passedContact);
-  const [isEditing, setIsEditing] = useState(false);
+export default function Contact() {
+  const { contact } = useLoaderData();
 
-  function handleChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-    setContact((contact) => ({ ...contact, [name]: value }));
-  }
+  return (
+    <VStack>
+      <Flex w={"100%"} justifyContent={"flex-end"} padding={"10px"} gap={"5px"}>
+        <IconButton
+          as={Link}
+          to={`/contacts/${contact._id}/edit`}
+          icon={<EditIcon />}
+        >
+          Edit
+        </IconButton>
+        <Form method={"post"} action={"delete"}>
+          <IconButton type={"submit"} icon={<DeleteIcon />} colorScheme={"red"}>
+            Delete
+          </IconButton>
+        </Form>
+      </Flex>
+      <Avatar size={"2xl"} gap={"5px"} />
+      <Heading>
+        {contact.firstName} {contact.lastName}
+      </Heading>
+      <HStack>
+        <Button as={"a"} href={`tel:${contact.tel}`} leftIcon={<PhoneIcon />}>
+          Call
+        </Button>
+        <Button as={"a"} href={`sms:${contact.tel}`} leftIcon={<ChatIcon />}>
+          Message
+        </Button>
+        <Button
+          as={"a"}
+          href={`mailto:${contact.email}`}
+          leftIcon={<EmailIcon />}
+        >
+          Email
+        </Button>
+      </HStack>
+      <Heading size={"sm"}>Phone number</Heading>
+      <Text>{contact.tel}</Text>
+      <Heading size={"sm"}>Email</Heading>
+      <Text>{contact.email}</Text>
+    </VStack>
+  );
+}
 
-  function handleEditButton() {
-    setIsEditing((prevState) => !prevState);
-  }
-
-  function handleCancelEdit() {
-    cancelEdit();
-  }
-
-  function cancelEdit() {
-    setContact(contact);
-    setIsEditing(false);
-  }
-
-  function handleSaveEdit(e) {
-    e.preventDefault();
-    updateContact(contact).then((res) => {
-      cancelEdit();
-    });
-  }
-
-  if (!isEditing) {
-    return (
-      <VStack>
-        <Flex w={"100%"} justifyContent={"flex-end"} padding={"10px"}>
-          <Button onClick={handleEditButton}>Edit</Button>
-        </Flex>
-        <Avatar size={"2xl"} gap={"5px"} />
-        <Heading>
-          {contact.firstName} {contact.lastName}
-        </Heading>
-        <HStack>
-          <Button leftIcon={<PhoneIcon />}>Call</Button>
-          <Button leftIcon={<ChatIcon />}>Message</Button>
-          <Button leftIcon={<EmailIcon />}>Email</Button>
-        </HStack>
-        <Heading size={"sm"}>Phone number</Heading>
-        <Text>{contact.tel}</Text>
-        <Heading size={"sm"}>Email</Heading>
-        <Text>{contact.email}</Text>
-      </VStack>
-    );
-  }
-  if (isEditing) {
-    return (
-      <div>
-        <form onSubmit={handleSaveEdit}>
-          <label htmlFor={"firstname"}>Name</label>
-          <input
-            id={"firstName"}
-            name={"firstName"}
-            onChange={handleChange}
-            defaultValue={contact.firstName}
-          />
-          <label htmlFor={"lastName"}>Surname</label>
-          <input
-            id={"lastName"}
-            name={"lastName"}
-            onChange={handleChange}
-            defaultValue={contact.lastName}
-          />
-          <label htmlFor={"email"}>email</label>
-          <input
-            id={"email"}
-            name={"email"}
-            onChange={handleChange}
-            defaultValue={contact.email}
-          />
-          <label htmlFor={"email"}>tel</label>
-          <input
-            id={"tel"}
-            name={"tel"}
-            onChange={handleChange}
-            defaultValue={contact.tel}
-          />
-          <Button onClick={handleCancelEdit}>Cancel</Button>
-          <Button type={"submit"}>Save</Button>
-        </form>
-      </div>
-    );
+export async function loader({ params }) {
+  try {
+    const contact = await getContact(params.contactId);
+    return { contact };
+  } catch (error) {
+    if (error.response.status === 401) {
+      return redirect("/login");
+    }
   }
 }
 
-export default Contact;
+export async function deleteAction({ params }) {
+  await deleteContact(params.contactId);
+  return redirect("/");
+}
